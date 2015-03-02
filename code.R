@@ -12,7 +12,7 @@ sp5 %>>%
   (
     data.frame(
       date = index(.)
-      ,roc = .[,1,drop=T]/lag(.[,1,drop=T],k=1)
+      ,price = .[,1,drop=T]/lag(.[,1,drop=T],k=1)
     )
   ) %>>%
   # add a column for Year
@@ -21,8 +21,9 @@ sp5 %>>%
   group_by( year ) %>>%
   # within each year, find what day in the year so we can join
   mutate( pos = rank(date) ) %>>%
+  mutate( roc = price/lag(price,k=1) - 1 ) %>>%
   # can remove date
-  select( -date ) %>>%
+  select( -c(date,price) ) %>>%
   as.data.frame %>>%
   # years as columns as pos as row
   spread( year, roc ) %>>%
@@ -31,12 +32,12 @@ sp5 %>>%
   # remove pos since index will be same
   select( -pos ) %>>%
   # fill nas with previous value
-  na.fill( "extend" ) %>>%
+  na.fill( 0 ) %>>%
   t %>>%
   # use TSclust diss; notes lots of METHOD options
   diss( METHOD="ACF" ) %>>%
   hclust %>>%
   ape::as.phylo() %>>% 
-  treewidget #%>>%
-  #htmlwidgets::as.iframe(file="index.html",selfcontained=F,libdir = "./lib")
+  treewidget %>>%
+  htmlwidgets::as.iframe(file="index.html",selfcontained=F,libdir = "./lib")
 
