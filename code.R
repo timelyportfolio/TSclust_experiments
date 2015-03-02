@@ -12,7 +12,7 @@ sp5 %>>%
   (
     data.frame(
       date = index(.)
-      ,price = .[,1,drop=T]/lag(.[,1,drop=T],k=1)
+      ,price = .[,1,drop=T]
     )
   ) %>>%
   # add a column for Year
