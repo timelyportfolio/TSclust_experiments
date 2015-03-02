@@ -38,6 +38,6 @@ sp5 %>>%
   diss( METHOD="ACF" ) %>>%
   hclust %>>%
   ape::as.phylo() %>>% 
-  treewidget %>>%
-  htmlwidgets::as.iframe(file="index.html",selfcontained=F,libdir = "./lib")
+  treewidget #%>>%
+  #htmlwidgets::as.iframe(file="index.html",selfcontained=F,libdir = "./lib")
 
