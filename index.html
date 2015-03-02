@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<script src="lib/htmlwidgets-0.3.2/htmlwidgets.js"></script>
+<script src="lib/d3-3.5.4/d3.min.js"></script>
+<script src="lib/jquery-2.1.3/jquery.min.js"></script>
+<script src="lib/blob-2015-01-04/Blob.js"></script>
+<script src="lib/filesaver-2015-01-04/FileSaver.min.js"></script>
+<link href="lib/bootstrap-3.3.2/bootstrap.min.css" rel="stylesheet" />
+<script src="lib/bootstrap-3.3.2/bootstrap.min.js"></script>
+<link href="lib/fontawesome-4.3.0/font-awesome.css" rel="stylesheet" />
+<link href="lib/phylotree-0.1/phylotree.css" rel="stylesheet" />
+<script src="lib/phylotree-0.1/phylotree.js"></script>
+<script src="lib/treewidget-binding-0.1/treewidget.js"></script>
+
+</head>
+<body style="background-color:white;">
+<div id="htmlwidget_container">
+  <div id="htmlwidget-1429" class="treewidget container" style="width:960px;height:500px;">
+<!-- Brand and toggle get grouped for better mobile display -->
+<div class="navbar-header">
+  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+    <span class="sr-only">Toggle navigation</span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+  </button>
+  <a class="navbar-brand" href="#">D3 Tree Viewer</a>
+</div>
+
+<div class="form-group navbar-form navbar-right">
+  <input type="text" id="branch_filter" class="form-control" placeholder="Filter branches on">
+</div>
+
+
+<div class="row">
+  <div class="col-md-5 navbar-right ">
+      <div class="navbar-form " role="search">
+           <div class="input-group">
+              <span class="input-group-btn">
+                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                      Tag <span class="caret"></span>
+                  </button>
+                    <ul class="dropdown-menu" id="selection_name_dropdown">
+                      <li id="selection_new"><a href="#">New selection set</a></li>
+                      <li id="selection_delete" class="disabled" data-original-title="" title=""><a href="#">Delete selection set</a></li>
+                      <li id="selection_rename"><a href="#">Rename selection set</a></li>
+                      <li class="divider"></li>
+                   <li class="selection_set"><a href="#" style="color: rgb(31, 119, 180);">Foreground</a></li></ul>
+              </span>
+
+              <input type="text" class="form-control" value="Foreground" id="selection_name_box" disabled="" style="color: rgb(31, 119, 180);">
+
+              <span class="input-group-btn" id="save_selection_name" style="display: none">
+                  <button type="button" class="btn btn-default" id="cancel_selection_button">
+                      Cancel
+                  </button>
+                  <button type="button" class="btn btn-default" id="save_selection_button">
+                      Save
+                  </button>
+              </span>
+              <span class="input-group-btn">
+                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Selection <span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                      <li><a href="#" id="filter_add">Add filtered nodes to selection</a></li>
+                      <li><a href="#" id="filter_remove">Remove filtered nodes from selection</a></li>
+                      <li class="divider"></li>
+                      <li><a href="#" id="select_all">Select all</a></li>
+                      <li><a href="#" id="select_all_internal">Select all internal nodes</a></li>
+                      <li><a href="#" id="select_all_leaves">Select all leaf nodes</a></li>
+                      <li><a href="#" id="clear_internal">Clear all internal nodes</a></li>
+                      <li><a href="#" id="clear_leaves">Clear all leaves</a></li>
+                      <li><a href="#" id="select_none">Clear selection</a></li>
+                      <li class="divider"></li>
+                      <li><a href="#" id="mp_label">Label internal nodes using maximum parsimony</a></li>
+                      <li><a href="#" id="and_label">Label internal nodes using conjunction (AND) </a></li>
+                      <li><a href="#" id="or_label">Label internal nodes using disjunction (OR) </a></li>
+                   </ul>
+              </span>
+            </div>
+      </div>
+  </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="btn-toolbar" role="toolbar">
+          <div class="btn-group">
+            <button type="button" class="btn btn-default btn-sm" id="expand_spacing" title="Expand spacing">
+                <i class="fa fa-expand"></i>
+            </button>
+             <button type="button" class="btn btn-default btn-sm" id="compress_spacing" title="Compress spacing">
+                <i class="fa fa-compress"></i>
+            </button>
+             <button type="button" class="btn btn-default btn-sm" id="sort_ascending" title="Sort deepest clades to the bototm">
+                <i class="fa fa-sort-amount-asc"></i>
+            </button>
+             <button type="button" class="btn btn-default btn-sm" id="sort_descending" title="Sort deepsest clades to the top">
+                <i class="fa fa-sort-amount-desc"></i>
+            </button>
+             <button type="button" class="btn btn-default btn-sm" id="sort_original" title="Restore original order">
+                <i class="fa fa-sort"></i>
+            </button>
+            <button text="Save tree" id="save_tree" class="btn btn-default btn-sm" type="button">
+              <i class="fa fa-floppy-o"></i>
+            </button>
+            <button text="Exit" id="exit_widget" class="btn btn-default btn-sm" type="button">
+              <i class="fa fa-close"></i>
+            </button>
+          </div>
+           <label class="pull-right">Selected <span class="badge" id="selected_branch_counter">0</span> and filtered <span class="badge" id="selected_filtered_counter">0</span> branches</label>
+       </div>
+    </div>
+</div>
+</div>
+</div>
+<script type="application/json" data-for="htmlwidget-1429">{ "x": {
+ "nwk": "(((1999:0.223311343,2011:0.223311343):0.08748229559,((1956:0.1430967406,2003:0.1430967406):0.1213311917,(1994:0.1828724566,2009:0.1828724566):0.08155547575):0.04636570623):0.1662198763,((((1955:0.1455438047,2006:0.1455438047):0.05526993321,(1995:0.153323958,2000:0.153323958):0.04748977993):0.07166775167,(2008:0.2279078056,(1997:0.1410132028,2007:0.1410132028):0.08689460282):0.04457368398):0.1270404374,((1970:0.2542117308,((1974:0.1561206525,1975:0.1561206525):0.04152708582,((1996:0.1121632028,2012:0.1121632028):0.04568468924,(1993:0.1141980018,2002:0.1141980018):0.04364989023):0.03979984627):0.05656399251):0.1088015188,(((1983:0.1373386145,1998:0.1373386145):0.126738285,(((1980:0.1263870322,(1985:0.09279680325,1987:0.09279680325):0.03359022891):0.05711999586,(1989:0.1579834796,(1992:0.1378656571,((1963:0.07411767754,1988:0.07411767754):0.03007749139,(2005:0.09063933236,2014:0.09063933236):0.01355583656):0.03367048821):0.0201178225):0.02552354838):0.03356898611,(2001:0.1980814022,((1959:0.1210681252,1978:0.1210681252):0.04417815906,(1986:0.1400420868,2010:0.1400420868):0.02520419752):0.03283511795):0.01899461191):0.04700088546):0.05483037022,((((1961:0.1274481871,2013:0.1274481871):0.0682286792,(1950:0.1506511852,((1953:0.08964905231,1979:0.08964905231):0.04399168486,(1965:0.1063220443,1991:0.1063220443):0.02731869285):0.01701044805):0.04502568111):0.05231137096,(1990:0.2115261846,2004:0.2115261846):0.03646205274):0.05600081752,((1968:0.2219841236,(1962:0.1473025483,1982:0.1473025483):0.07468157528):0.05211637792,(((1960:0.1271100229,1981:0.1271100229):0.05572133722,(1971:0.1477571255,(1966:0.1158664498,(1951:0.103882371,1972:0.103882371):0.01198407886):0.03189067568):0.03507423464):0.0681291775,(((1952:0.1274605022,(1964:0.09302594611,1984:0.09302594611):0.03443455613):0.05067587773,(1954:0.1350051401,(1973:0.09098352423,1976:0.09098352423):0.0440216159):0.04313123984):0.04699877214,(1957:0.195639966,((1969:0.09910249617,1977:0.09910249617):0.07317770617,(1958:0.1115369716,1967:0.1115369716):0.06074323079):0.02335976366):0.0294951861):0.02582538552):0.0231399639):0.02988855329):0.01491821498):0.04410597978):0.03650867738):0.07749158795);" 
+},"evals": [  ] }</script>
+<script type="application/htmlwidget-sizing" data-for="htmlwidget-1429">{ "viewer": {
+ "width":               450,
+"height":               350,
+"padding":                15,
+"fill": true 
+},"browser": {
+ "width":               960,
+"height":               500,
+"padding":                 0,
+"fill": true 
+} }</script>
+</body>
+</html>
