@@ -120,4 +120,4 @@ sP %>>%
     )
   ) %>>%
   ( do.call(rbind, .) ) %>>%
-  (~print(levelplot(acf~factor(lag)+as.Date(year,"%Y"),data=.)))
+  (~print(levelplot(acf~lag+as.Date(year,"%Y"),data=.)))
