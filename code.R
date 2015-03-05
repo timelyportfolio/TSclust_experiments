@@ -74,6 +74,19 @@ sp_long %>>%
   ggplot( aes( x = factor(cluster), y = roc )) %>>%
     +geom_violin() + theme_bw()
 
+sp_long %>>%
+  ggplot( aes( x = roc, group = year, color = factor(cluster) ) ) %>>%
+  + geom_density() %>>%
+  + facet_wrap(  ~ cluster, ncol = 1 ) %>>%
+  + xlim(-0.05,0.05) %>>%
+  + labs(title='Density of S&P 500 Years Clustered by TSclust') %>>%
+  + theme_bw() %>>%
+  # thanks to my friend Zev Ross for his cheatsheet
+  + theme( plot.title = element_text(size=15, face="bold", hjust=0) ) %>>%
+  + theme( legend.position="none" )  %>>%
+  + scale_color_brewer( palette="Paired" )
+  
+
 # explore autocorrelations
 sp5 %>>%
   # dplyr doesn't like xts, so make a data.frame
