@@ -69,3 +69,55 @@ sp5 %>>%
   # fill nas with previous value
   na.fill(0) %>>% as.data.frame %>>% gather(year,roc,-pos) %>>%
   (densityplot(~roc,groups=year,data = .))
+
+
+# explore autocorrelations
+sp5 %>>%
+  # dplyr doesn't like xts, so make a data.frame
+  (
+    data.frame(
+      date = index(.)
+      ,price = .[,1,drop=T]
+    )
+  ) %>>%
+  # add a column for Year
+  mutate( year = as.numeric(format(date,"%Y"))) %>>%
+  # group by our new Year column
+  group_by( year ) %>>%
+  # within each year, find what day in the year so we can join
+  mutate( pos = rank(date) ) %>>%
+  mutate( roc = price/lag(price,k=1) - 1 ) %>>%
+  # can remove date
+  select( -c(date,price) ) %>>%
+  as.data.frame %>>%
+  # years as columns as pos as row
+  spread( year, roc ) %>>%
+  # remove last year since assume not complete
+  ( .[,-ncol(.)] ) %>>% t -> sP
+
+sP %>>%
+  (a~
+    lapply(
+      2:nrow(a)
+      ,function(yr){
+        a[yr,][-1] %>>%
+          (.[which(!is.na(.))]) %>>%
+          acf(plot=F) %>>%
+          (
+            data.frame(
+              year = as.Date(
+                paste0(
+                  dimnames(sP)[[1]][yr]
+                  ,"-01-01"
+                )
+                ,"%Y-%m-%d"
+              )
+              ,lag = .$lag[-1]
+              ,acf = .$acf[-1]
+            )
+          )
+      }
+    )
+  ) %>>%
+  ( do.call(rbind, .) ) %>>%
+  (~print(levelplot(acf~factor(lag)+as.Date(year,"%Y"),data=.)))
